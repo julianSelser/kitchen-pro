@@ -1,12 +1,10 @@
-/build
-
-
 # Created by https://www.gitignore.io/api/l,linux,windows,macos,gradle,android
 
 #!! ERROR: l is undefined. Use list command to see defined gitignore types !!#
 
 ### Linux ###
 *~
+.idea/
 
 # temporary files which can be created if a process still has a handle open of a deleted file
 .fuse_hidden*
