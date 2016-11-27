@@ -1,9 +1,8 @@
 package com.kitchen_pro.kitchenrecipe.activities;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.View;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -12,31 +11,36 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.kitchen_pro.kitchenrecipe.R;
+import com.kitchen_pro.kitchenrecipe.fragments.CocinaDelMundoFragment;
+
+import butterknife.BindView;
 
 public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    @BindView(R.id.navigation_drawer_layout) DrawerLayout drawerLayout;
+    @BindView(R.id.navigation_view) NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+//            }
+//        });
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
+                this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        onNavigationItemSelected(navigationView.getMenu().findItem(R.id.nav_cocina_del_mundo));
     }
 
     @Override
@@ -46,9 +50,8 @@ public class MainActivity extends BaseActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
         }
@@ -78,26 +81,60 @@ public class MainActivity extends BaseActivity
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
+    public boolean onNavigationItemSelected(MenuItem menuItem) {
+        int menuItemId = menuItem.getItemId();
+        Fragment fragment = getFragment(menuItem);
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        if (fragment != null) {
+            navigationView.setCheckedItem(menuItemId);
 
-        } else if (id == R.id.nav_slideshow) {
+            // Highlight the selected item, update the title, and close the drawer
+            menuItem.setChecked(true);
+            setTitle(menuItem.getTitle());
+            drawerLayout.closeDrawers();
 
-        } else if (id == R.id.nav_manage) {
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.fragment, fragment).commit();
+        }
+        return true;
+    }
 
-        } else if (id == R.id.nav_share) {
+    private Fragment getFragment(MenuItem menuItem) {
+        Class fragmentClass = null;
+        Fragment fragment = null;
+        int menuItemId = menuItem.getItemId();
 
-        } else if (id == R.id.nav_send) {
-
+        switch (menuItemId) {
+            case R.id.nav_cocina_del_mundo:
+                fragmentClass = CocinaDelMundoFragment.class;
+                break;
+            case R.id.nav_gallery:
+//                fragmentClass = StarredFragment.class;
+                break;
+            case R.id.nav_slideshow:
+                break;
+            case R.id.nav_manage:
+                break;
+            case R.id.nav_share:
+//                Toast.makeText(MainActivity.this, "Launching " + menuItem.getTitle().toString(), Toast.LENGTH_SHORT).show();
+//                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+//                startActivity(intent);
+                break;
+            case R.id.nav_send:
+//                Toast.makeText(MainActivity.this, menuItem.getTitle().toString(), Toast.LENGTH_SHORT).show();
+                break;
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
+        if(fragmentClass != null) {
+            try {
+                fragment = (Fragment) fragmentClass.newInstance();
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return fragment;
     }
 }
