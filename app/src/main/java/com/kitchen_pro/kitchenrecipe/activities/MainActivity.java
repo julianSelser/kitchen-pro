@@ -40,6 +40,8 @@ public class MainActivity extends BaseActivity
         toggle.syncState();
 
         navigationView.setNavigationItemSelectedListener(this);
+
+        //Select first Fragment of the nav_menu
         onNavigationItemSelected(navigationView.getMenu().findItem(R.id.nav_cocina_del_mundo));
     }
 
