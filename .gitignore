@@ -2,6 +2,8 @@
 
 #!! ERROR: l is undefined. Use list command to see defined gitignore types !!#
 
+local.properties
+
 ### Linux ###
 *~
 .idea/
